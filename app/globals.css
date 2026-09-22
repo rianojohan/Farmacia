@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FAF7F1;
+  color: #241F1A;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-ok {
+  background: #EAF2EE;
+  color: #1A4235;
+}
+
+.badge-warn {
+  background: #FBF0DC;
+  color: #7A4E0A;
+}
+
+.badge-danger {
+  background: #FBEAEA;
+  color: #8A2A24;
+}
+
+.input-field {
+  width: 100%;
+  border: 1px solid #E4DCCE;
+  background: #FFFFFF;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input-field:focus {
+  border-color: #2F6F5E;
+}
+
+.btn-primary {
+  background: #2F6F5E;
+  color: #FDFBF7;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: #235747;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #2F6F5E;
+  border: 1px solid #9CC4B0;
+  border-radius: 10px;
+  padding: 8px 15px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-secondary:hover {
+  background: #EAF2EE;
+}
+
+.btn-danger {
+  background: transparent;
+  color: #8A2A24;
+  border: 1px solid #F0B8B4;
+  border-radius: 10px;
+  padding: 8px 15px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.btn-danger:hover {
+  background: #FBEAEA;
+}
+
+.card {
+  background: #FFFFFF;
+  border: 1px solid #F1EAE0;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(15, 42, 32, 0.06), 0 1px 8px rgba(15, 42, 32, 0.05);
+}
