@@ -2,8 +2,10 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useSesion } from "@/components/SesionContext";
 import { notificarAlertas } from "@/lib/eventos";
-import { diasParaVencer, UMBRAL_BAJO_STOCK, UMBRAL_DIAS_VENCIMIENTO } from "@/lib/helpers";
+import { puedeEditar, puedeEliminar } from "@/lib/permisos";
+import { CATEGORIAS, diasParaVencer, UMBRAL_BAJO_STOCK, UMBRAL_DIAS_VENCIMIENTO } from "@/lib/helpers";
 
 const TABS = [
   { key: "todo", label: "Todo el inventario" },
@@ -22,6 +24,9 @@ const TABS = [
 function InventarioContenido() {
   const searchParams = useSearchParams();
   const destacadoId = searchParams.get("producto") ? Number(searchParams.get("producto")) : null;
+  const sesion = useSesion();
+  const editar = puedeEditar(sesion?.rol);
+  const eliminar = puedeEliminar(sesion?.rol);
 
   const [productos, setProductos] = useState([]);
   const [movimientos, setMovimientos] = useState([]);
@@ -29,6 +34,9 @@ function InventarioContenido() {
   const [entradaId, setEntradaId] = useState("");
   const [entradaCantidad, setEntradaCantidad] = useState("");
   const [error, setError] = useState("");
+  const [form, setForm] = useState(null);
+  const [proveedores, setProveedores] = useState([]);
+  const [guardando, setGuardando] = useState(false);
 
   function recargar() {
     fetch("/api/inventario")
@@ -84,6 +92,67 @@ function InventarioContenido() {
     }
   }
 
+  async function abrirEditar(producto) {
+    setError("");
+    try {
+      const res = await fetch("/api/proveedores");
+      if (!res.ok) throw new Error("No se pudieron cargar los proveedores.");
+      const data = await res.json();
+      setProveedores(Array.isArray(data) ? data : []);
+      setForm({ ...producto, precio: String(producto.precio), cantidad: String(producto.cantidad), idProveedor: String(producto.idProveedor || "") });
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function handleGuardar(e) {
+    e.preventDefault();
+    if (!form.codigo.trim() || !form.nombre.trim() || !form.categoria || form.precio === "" || form.cantidad === "" || !form.fechaVencimiento) {
+      setError("Completa código, nombre, categoría, precio, cantidad y fecha de vencimiento.");
+      return;
+    }
+    setGuardando(true);
+    setError("");
+    try {
+      const original = productos.find((producto) => producto.idProducto === form.idProducto);
+      const cambios = {
+        codigo: form.codigo,
+        nombre: form.nombre,
+        categoria: form.categoria,
+        precio: Number(form.precio),
+        fechaVencimiento: form.fechaVencimiento,
+        idProveedor: form.idProveedor ? Number(form.idProveedor) : null,
+      };
+      if (Number(form.cantidad) !== original?.cantidad) cambios.cantidad = Number(form.cantidad);
+      const res = await fetch(`/api/productos/${form.idProducto}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cambios),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "No se pudo actualizar el producto.");
+      setForm(null);
+      recargar();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  async function handleEliminar(producto) {
+    if (!confirm(`¿Eliminar ${producto.nombre}? Esta acción no se puede deshacer.`)) return;
+    setError("");
+    try {
+      const res = await fetch(`/api/productos/${producto.idProducto}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "No se pudo eliminar el producto.");
+      recargar();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   return (
     <div>
       <header className="mb-6">
@@ -104,6 +173,8 @@ function InventarioContenido() {
           </button>
         ))}
       </div>
+
+      {error && !form && tab !== "movimientos" && <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2 mb-4">{error}</p>}
 
       {tab === "movimientos" ? (
         <div className="grid md:grid-cols-3 gap-5">
@@ -178,6 +249,7 @@ function InventarioContenido() {
                 <th className="px-4 py-3 font-medium">Categoría</th>
                 <th className="px-4 py-3 font-medium">Stock</th>
                 <th className="px-4 py-3 font-medium">Vencimiento</th>
+                {(editar || eliminar) && <th className="px-4 py-3 font-medium text-right">Acciones</th>}
               </tr>
             </thead>
             <tbody>
@@ -197,17 +269,64 @@ function InventarioContenido() {
                     {p.fechaVencimiento}{" "}
                     <span className="text-xs text-bosque-500/80">({diasParaVencer(p.fechaVencimiento)} días)</span>
                   </td>
+                  {(editar || eliminar) && (
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                      {editar && <button className="text-xs text-bosque-600 underline underline-offset-2 mr-3" onClick={() => abrirEditar(p)} aria-label={`Editar ${p.nombre}`}>Editar</button>}
+                      {eliminar && <button className="text-xs text-red-700 underline underline-offset-2" onClick={() => handleEliminar(p)} aria-label={`Eliminar ${p.nombre}`}>Eliminar</button>}
+                    </td>
+                  )}
                 </tr>
               ))}
               {lista.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-bosque-500 text-sm">
+                  <td colSpan={editar || eliminar ? 6 : 5} className="px-4 py-8 text-center text-bosque-500 text-sm">
                     No hay productos en esta categoría.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+        </div>
+      )}
+      {form && (
+        <div className="fixed inset-0 bg-bosque-900/40 flex items-center justify-center px-4 z-10">
+          <form onSubmit={handleGuardar} className="card w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="editar-producto-titulo">
+            <h2 id="editar-producto-titulo" className="font-display text-lg font-semibold text-bosque-700 mb-4">Editar producto</h2>
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <label className="col-span-2 sm:col-span-1 text-xs font-medium text-bosque-700">Código
+                <input required className="input-field mt-1" value={form.codigo} onChange={(e) => setForm({ ...form, codigo: e.target.value })} />
+              </label>
+              <label className="col-span-2 sm:col-span-1 text-xs font-medium text-bosque-700">Categoría
+                <select required className="input-field mt-1" value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })}>
+                  <option value="">Selecciona…</option>
+                  {CATEGORIAS.map((categoria) => <option key={categoria} value={categoria}>{categoria}</option>)}
+                </select>
+              </label>
+              <label className="col-span-2 text-xs font-medium text-bosque-700">Nombre
+                <input required className="input-field mt-1" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} />
+              </label>
+              <label className="text-xs font-medium text-bosque-700">Precio (COP)
+                <input required type="number" min="0" className="input-field mt-1" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} />
+              </label>
+              <label className="text-xs font-medium text-bosque-700">Cantidad
+                <input required type="number" min="0" step="1" className="input-field mt-1" value={form.cantidad} onChange={(e) => setForm({ ...form, cantidad: e.target.value })} />
+              </label>
+              <label className="text-xs font-medium text-bosque-700">Fecha de vencimiento
+                <input required type="date" className="input-field mt-1" value={form.fechaVencimiento} onChange={(e) => setForm({ ...form, fechaVencimiento: e.target.value })} />
+              </label>
+              <label className="text-xs font-medium text-bosque-700">Proveedor
+                <select className="input-field mt-1" value={form.idProveedor} onChange={(e) => setForm({ ...form, idProveedor: e.target.value })}>
+                  <option value="">Selecciona…</option>
+                  {proveedores.map((proveedor) => <option key={proveedor.idProveedor} value={proveedor.idProveedor}>{proveedor.nombre}</option>)}
+                </select>
+              </label>
+            </div>
+            {error && <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2 mb-3">{error}</p>}
+            <div className="flex justify-end gap-2 mt-4">
+              <button type="button" className="btn-secondary" disabled={guardando} onClick={() => { setForm(null); setError(""); }}>Cancelar</button>
+              <button type="submit" className="btn-primary" disabled={guardando}>{guardando ? "Guardando…" : "Guardar"}</button>
+            </div>
+          </form>
         </div>
       )}
     </div>
