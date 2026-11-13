@@ -1,0 +1,1 @@
+alter table public.bitacora drop constraint if exists bitacora_id_usuario_fkey; alter table public.bitacora add constraint bitacora_id_usuario_fkey foreign key (id_usuario) references public.perfiles (user_id) on delete set null;
