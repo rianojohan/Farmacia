@@ -2,6 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Paleta de colores como variables CSS (tripletas RGB) para que el modo
+   oscuro pueda reemplazarla por completo agregando la clase "dark" en <html>. */
+:root {
+  --c-crema-50: 253 251 247;      /* #FDFBF7 */
+  --c-crema-100: 250 247 241;     /* #FAF7F1 */
+  --c-crema-200: 241 234 224;     /* #F1EAE0 */
+  --c-bosque-50: 234 242 238;     /* #EAF2EE */
+  --c-bosque-100: 203 224 214;    /* #CBE0D6 */
+  --c-bosque-200: 156 196 176;    /* #9CC4B0 */
+  --c-bosque-400: 78 144 120;     /* #4E9078 */
+  --c-bosque-500: 47 111 94;      /* #2F6F5E */
+  --c-bosque-600: 35 87 71;       /* #235747 */
+  --c-bosque-700: 26 66 53;       /* #1A4235 */
+  --c-bosque-900: 15 42 32;       /* #0F2A20 */
+  --c-terracota-50: 247 236 230;  /* #F7ECE6 */
+  --c-terracota-100: 237 209 193; /* #EDD1C1 */
+  --c-terracota-400: 201 131 95;  /* #C9835F */
+  --c-terracota-500: 181 101 74;  /* #B5654A */
+  --c-terracota-600: 148 80 58;   /* #94503A */
+  --c-terracota-800: 92 47 31;    /* #5C2F1F */
+}
+
+/* Modo oscuro: las superficies claras se vuelven verdes profundos y los
+   textos verdes oscuros se vuelven claros. La barra lateral mantiene sus
+   propios colores fijos porque ya es oscura en ambos modos. */
+html.dark {
+  --c-crema-50: 22 53 42;         /* #16352A superficie de tarjeta */
+  --c-crema-100: 12 34 26;        /* #0C221A fondo de pantalla */
+  --c-crema-200: 35 87 71;        /* #235747 bordes */
+  --c-bosque-50: 22 53 42;        /* #16352A superficie suave */
+  --c-bosque-100: 24 62 50;       /* #183E32 superficie de mensaje */
+  --c-bosque-200: 47 111 94;      /* #2F6F5E bordes */
+  --c-bosque-400: 111 174 151;    /* #6FAE97 acentos */
+  --c-bosque-500: 124 187 164;    /* #7CBBA4 texto secundario / acento */
+  --c-bosque-600: 143 203 181;    /* #8FCBB5 texto terciario */
+  --c-bosque-700: 203 224 214;    /* #CBE0D6 titulares */
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -9,6 +47,11 @@ html {
 body {
   background-color: #FAF7F1;
   color: #241F1A;
+}
+
+html.dark body {
+  background-color: #0C221A;
+  color: #EAF2EE;
 }
 
 .badge {
@@ -100,19 +143,74 @@ body {
   box-shadow: 0 1px 2px rgba(15, 42, 32, 0.06), 0 1px 8px rgba(15, 42, 32, 0.05);
 }
 
-/* Modo oscuro (solo aplica dentro de un contenedor con clase "dark"). */
-.dark .card {
+/* ----- Modo oscuro de los componentes compartidos ----- */
+
+html.dark .card {
   background: #142E25;
   border-color: #235747;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 8px rgba(0, 0, 0, 0.25);
 }
 
-.dark .input-field {
+html.dark .input-field {
   background: #0F2A20;
   border-color: #2F6F5E;
   color: #EAF2EE;
 }
 
-.dark .input-field::placeholder {
+html.dark .input-field::placeholder {
   color: #9CC4B0;
+}
+
+html.dark .btn-primary {
+  background: #3D8A73;
+}
+
+html.dark .btn-primary:hover {
+  background: #4A9B82;
+}
+
+html.dark .btn-secondary {
+  color: #7CBBA4;
+  border-color: #2F6F5E;
+}
+
+html.dark .btn-secondary:hover {
+  background: rgba(47, 111, 94, 0.25);
+}
+
+html.dark .btn-danger {
+  color: #FCA5A5;
+  border-color: #7F2D26;
+}
+
+html.dark .btn-danger:hover {
+  background: rgba(127, 29, 29, 0.35);
+}
+
+html.dark .badge-ok {
+  background: #1A4235;
+  color: #9CC4B0;
+}
+
+html.dark .badge-warn {
+  background: #3A2E14;
+  color: #FCD34D;
+}
+
+html.dark .badge-danger {
+  background: #3B1A18;
+  color: #FCA5A5;
+}
+
+/* Mensajes de error y advertencia con la paleta estándar de Tailwind. */
+html.dark .text-red-700 {
+  color: #FCA5A5;
+}
+
+html.dark .bg-red-50 {
+  background-color: rgba(127, 29, 29, 0.35);
+}
+
+html.dark .text-amber-700 {
+  color: #FCD34D;
 }

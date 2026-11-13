@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { RUTAS_POR_ROL } from "@/lib/permisos";
 import { useSesion } from "@/components/SesionContext";
+import TemaToggle from "@/components/TemaToggle";
 
 const LINKS = [
   { href: "/dashboard", label: "Panel principal", icon: "home", soloAdmin: true },
@@ -53,10 +54,13 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-60 shrink-0 bg-bosque-700 text-crema-50 flex flex-col min-h-screen">
-      <div className="px-5 py-6 border-b border-bosque-600/60">
-        <p className="font-display text-lg font-semibold leading-tight">Solo la Salud</p>
-        <p className="text-xs text-bosque-100/80 mt-0.5">Gestión de droguería</p>
+    <aside className="w-60 shrink-0 bg-bosque-700 dark:bg-bosque-900 text-crema-50 dark:text-white flex flex-col min-h-screen transition-colors">
+      <div className="px-5 py-6 border-b border-bosque-600/60 dark:border-bosque-500/40 flex items-start justify-between gap-2">
+        <div>
+          <p className="font-display text-lg font-semibold leading-tight">Solo la Salud</p>
+          <p className="text-xs text-bosque-100/80 dark:text-white/60 mt-0.5">Gestión de droguería</p>
+        </div>
+        <TemaToggle className="mt-0.5 w-8 h-8 border border-white/25 text-white/85 hover:border-white/60" />
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1">
@@ -64,7 +68,9 @@ export default function Sidebar() {
           const active = pathname === link.href;
           return (
             <Link href={link.href} key={link.href} className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-colors ${
-              active ? "bg-crema-50 text-bosque-700 font-medium" : "text-crema-100/90 hover:bg-bosque-600/60"
+              active
+                ? "bg-crema-50 text-bosque-700 dark:bg-bosque-500/30 dark:text-bosque-100 font-medium"
+                : "text-crema-100/90 dark:text-white/85 hover:bg-bosque-600/60 dark:hover:bg-white/10"
             }`}>
               <Icon name={link.icon} />
               {link.label}
@@ -73,13 +79,13 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="px-4 py-4 border-t border-bosque-600/60">
-        <p className="text-xs text-crema-100/70">Sesión activa</p>
+      <div className="px-4 py-4 border-t border-bosque-600/60 dark:border-bosque-500/40">
+        <p className="text-xs text-crema-100/70 dark:text-white/60">Sesión activa</p>
         <p className="text-sm font-medium">{sesion?.nombre}</p>
-        <p className="text-xs text-crema-100/70 capitalize mb-3">
+        <p className="text-xs text-crema-100/70 dark:text-white/60 capitalize mb-3">
           {sesion?.rol === "admin" ? "Administrador" : "Empleado"}
         </p>
-        <button onClick={handleLogout} className="text-xs text-crema-100/90 underline underline-offset-2 hover:text-crema-50">
+        <button onClick={handleLogout} className="text-xs text-crema-100/90 dark:text-white/85 underline underline-offset-2 hover:text-crema-50 dark:hover:text-white">
           Cerrar sesión
         </button>
       </div>

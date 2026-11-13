@@ -19,8 +19,18 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es">
-      <body className={`${fraunces.variable} ${inter.variable} font-sans`}>{children}</body>
+    <html lang="es" suppressHydrationWarning>
+      <body className={`${fraunces.variable} ${inter.variable} font-sans`}>
+        {/* Aplica el modo oscuro guardado antes del primer render para
+            evitar un destello de tema claro en cada página. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'try{if(localStorage.getItem("tema")==="oscuro"){document.documentElement.classList.add("dark")}}catch(e){}',
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

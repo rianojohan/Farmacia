@@ -8,28 +8,30 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Paleta definida con variables CSS para poder cambiarla por completo
+        // en modo oscuro (html.dark) sin editar cada pantalla.
         bosque: {
-          50: "#EAF2EE",
-          100: "#CBE0D6",
-          200: "#9CC4B0",
-          400: "#4E9078",
-          500: "#2F6F5E",
-          600: "#235747",
-          700: "#1A4235",
-          900: "#0F2A20",
+          50: "rgb(var(--c-bosque-50) / <alpha-value>)",
+          100: "rgb(var(--c-bosque-100) / <alpha-value>)",
+          200: "rgb(var(--c-bosque-200) / <alpha-value>)",
+          400: "rgb(var(--c-bosque-400) / <alpha-value>)",
+          500: "rgb(var(--c-bosque-500) / <alpha-value>)",
+          600: "rgb(var(--c-bosque-600) / <alpha-value>)",
+          700: "rgb(var(--c-bosque-700) / <alpha-value>)",
+          900: "rgb(var(--c-bosque-900) / <alpha-value>)",
         },
         terracota: {
-          50: "#F7ECE6",
-          100: "#EDD1C1",
-          400: "#C9835F",
-          500: "#B5654A",
-          600: "#94503A",
-          800: "#5C2F1F",
+          50: "rgb(var(--c-terracota-50) / <alpha-value>)",
+          100: "rgb(var(--c-terracota-100) / <alpha-value>)",
+          400: "rgb(var(--c-terracota-400) / <alpha-value>)",
+          500: "rgb(var(--c-terracota-500) / <alpha-value>)",
+          600: "rgb(var(--c-terracota-600) / <alpha-value>)",
+          800: "rgb(var(--c-terracota-800) / <alpha-value>)",
         },
         crema: {
-          50: "#FDFBF7",
-          100: "#FAF7F1",
-          200: "#F1EAE0",
+          50: "rgb(var(--c-crema-50) / <alpha-value>)",
+          100: "rgb(var(--c-crema-100) / <alpha-value>)",
+          200: "rgb(var(--c-crema-200) / <alpha-value>)",
         },
       },
       fontFamily: {

@@ -116,7 +116,7 @@ export default function DashboardPage() {
           onChange={(e) => setBusqueda(e.target.value)}
         />
         {resultados.length > 0 && (
-          <div className="absolute left-5 right-5 mt-1 max-w-xl bg-white border border-crema-200 rounded-xl shadow-card z-10 overflow-hidden">
+          <div className="absolute left-5 right-5 mt-1 max-w-xl bg-crema-50 border border-crema-200 rounded-xl shadow-card z-10 overflow-hidden">
             {resultados.map((p) => (
               <button
                 key={p.idProducto}
