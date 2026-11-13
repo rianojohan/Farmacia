@@ -69,7 +69,7 @@ export default function Sidebar() {
           return (
             <Link href={link.href} key={link.href} className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-colors ${
               active
-                ? "bg-crema-50 text-bosque-700 dark:bg-bosque-500/30 dark:text-bosque-100 font-medium"
+                ? "bg-crema-50 text-bosque-700 dark:bg-bosque-500/30 dark:text-white font-medium"
                 : "text-crema-100/90 dark:text-white/85 hover:bg-bosque-600/60 dark:hover:bg-white/10"
             }`}>
               <Icon name={link.icon} />
